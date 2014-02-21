@@ -58,14 +58,14 @@ elast
 pov.2012$hcind_2012 <- with(pov.2012,hcindfin*((1+(elast[[1]][2]*crecyn.fin2012+
                                                      elast[[1]][3]*crecgini))^(2012-maxyear)))
 
-pov.2012$pgind_2012 <- with(pov.2012,pgindfin*((1+(elast[[2]][2]*crecyn.fin2012+
-                                                             elast[[2]][3]*crecgini))^(2012-maxyear)))
+pov.2012$pgind_2012 <- with(pov.2012,pgindfin*((1+(elast[[3]][2]*crecyn.fin2012+
+                                                             elast[[3]][3]*crecgini))^(2012-maxyear)))
 
-pov.2012$hcpob_2012 <- with(pov.2012,hcpobfin*((1+(elast[[4]][2]*crecyn.fin2012+
+pov.2012$hcpob_2012 <- with(pov.2012,hcpobfin*((1+(elast[[2]][2]*crecyn.fin2012+
+                                                     elast[[2]][3]*crecgini))^(2012-maxyear)))
+
+pov.2012$pgpob_2012 <- with(pov.2012,pgpobfin*((1+(elast[[4]][2]*crecyn.fin2012+
                                                      elast[[4]][3]*crecgini))^(2012-maxyear)))
-
-pov.2012$pgpob_2012 <- with(pov.2012,pgpobfin*((1+(elast[[5]][2]*crecyn.fin2012+
-                                                     elast[[5]][3]*crecgini))^(2012-maxyear)))
 
 #### Falta PGS ----
 
@@ -140,40 +140,45 @@ for(i in 1:length(var.sim_hcind_2050)){
   
   sim[,var.sim_hcpob_2025[i]]<- 
     
-    with(sim,hcpob_2012*((1+(elast[[4]][2]*sim[,crec.sim_2025[i]]))^(2025-2012)))
+    with(sim,hcpob_2012*((1+(elast[[2]][2]*sim[,crec.sim_2025[i]]))^(2025-2012)))
   
   sim[,var.sim_hcpob_2050[i]]<-
     
-    with(sim,hcpob_2012*((1+(elast[[4]][2]*sim[,crec.sim_2050[i]]))^(2050-2012)))
+    with(sim,hcpob_2012*((1+(elast[[2]][2]*sim[,crec.sim_2050[i]]))^(2050-2012)))
 
 }
 
-pob_sim <- sim$iso3c
+pob_sim_2025 <- sim$iso3c
+pob_sim_2050 <- sim$iso3c
 
 pob.var.sim <- c("ind_bau_2025","ind_1_2025","ind_2_2025","ind_5_2025","ind_10_2025",
                  "ind_bau_2050","ind_1_2050","ind_2_2050","ind_5_2050","ind_10_2050",
                  "pobr_bau_2025","pobr_1_2025","pobr_2_2025","pobr_5_2025","pobr_10_2025",
                  "pobr_bau_2050","pobr_1_2050","pobr_2_2050","pobr_5_2050","pobr_10_2050")
 
-pob_sim <- merge(pob_sim,length(grep("hc|2025",names(sim))))
-
 pat_2025 <- intersect(grep(c("hc"),names(sim)),grep(c("2025"),names(sim)))
 pat_2050 <- intersect(grep(c("hc"),names(sim)),grep(c("2050"),names(sim)))
 
-for(i in 1:length())
+pob_sim_2025 <- cbind(pob_sim_2025,sim[,names(sim[pat_2025])]*pob$pob.2025/100)
+pob_sim_2050 <- cbind(pob_sim_2050,sim[,names(sim[pat_2050])]*pob$pob.2050/100)
 
+
+nhc_2025_tot <- apply(pob_sim_2025[,2:11],2,sum)
+
+nhc_2025_tot <- nhc_2025_tot[order(nhc_2025_tot)]
+
+nhc_2025_tot*100/pobtot[38]
+
+nhc_2050_tot <- apply(pob_sim_2050[,2:11],2,sum)
+
+nhc_2050_tot <- nhc_2050_tot[order(nhc_2050_tot)]
+
+nhc_2050_tot*100/pobtot[43]
 
 #### Resultados -----
 
-res <- sim[,grep("h|3",names(sim))]
 
-res <- merge(res,pob[,c("iso3c","pob.2012","pob.2025","pob.2050")])
 
-n_hc_2025 <- c("nind_1_2025","nind_2_2025","nind_5_2025","nind_10_2025",
-               "npob_1_2025","npob_2_2025","npob_5_2025","npob_10_2025")
 
-n_2025 <- pov.2012[,c("iso3c","pob.2012","nhcpob.2012","nhcind.2012")]
-
-for(i in 1:8){n_2025[,n_hc_2025[i]]<-with(res, res[,c(var.sim_hcind_2025,var.sim_hcpob_2025)[i]]*pob.2025/100)} 
 
 
